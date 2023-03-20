@@ -1,11 +1,8 @@
 package online;
 
-import openfl.net.URLRequest;
-import openfl.media.Sound;
-import flixel.util.FlxSave;
-#if desktop
-import Discord.DiscordClient;
-#end
+import Controls.KeyboardScheme;
+import CoolUtil.dominantColor;
+import PauseSubState.pracMode;
 import Section.SwagSection;
 import Song.SwagSong;
 import flixel.FlxBasic;
@@ -22,6 +19,7 @@ import flixel.addons.effects.FlxTrailArea;
 import flixel.addons.effects.chainable.FlxEffectSprite;
 import flixel.addons.effects.chainable.FlxWaveEffect;
 import flixel.addons.transition.FlxTransitionableState;
+import flixel.animation.FlxBaseAnimation;
 import flixel.graphics.atlas.FlxAtlas;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxGroup.FlxTypedGroup;
@@ -35,27 +33,30 @@ import flixel.tweens.FlxTween;
 import flixel.ui.FlxBar;
 import flixel.util.FlxCollision;
 import flixel.util.FlxColor;
+import flixel.util.FlxSave;
 import flixel.util.FlxSort;
-import flixel.animation.FlxBaseAnimation;
 import flixel.util.FlxStringUtil;
 import flixel.util.FlxTimer;
 import haxe.Json;
+import io.colyseus.Client;
+import io.colyseus.Room;
 import lime.utils.Assets;
 import openfl.display.BlendMode;
 import openfl.display.StageQuality;
 import openfl.filters.ShaderFilter;
-import PauseSubState.pracMode;
-import CoolUtil.dominantColor;
-import Controls.KeyboardScheme;
-import io.colyseus.Client;
-import io.colyseus.Room;
-import Config.data;
+import openfl.media.Sound;
+import openfl.net.URLRequest;
 
 using StringTools;
 
+#if desktop
+import Discord.DiscordClient;
+#end
+
 class PlayStateOnline extends MusicBeatState
 {
-    var coly:Client;
+	var coly:Client;
+
 	public static var modinst:Sound;
 	public static var modvoices:Sound;
 	public static var rooms:Room<Stuff>;
@@ -70,17 +71,23 @@ class PlayStateOnline extends MusicBeatState
 	public static var storyPlaylist:Array<String> = [];
 	public static var storyDifficulty:Int = 1;
 	public static var code:String;
+
 	var halloweenLevel:Bool = false;
 	private var vocals:FlxSound;
+
 	public static var startedMatch:Bool = false;
+
 	private var i:Int;
 	private var dad:Character;
 	private var gf:Character;
+
 	public var boyfriend:Boyfriend;
+
 	private var notes:FlxTypedGroup<Note>;
 	private var unspawnNotes:Array<Note> = [];
 	private var dodging:Bool;
 	private var strumLine:FlxSprite;
+
 	public static var assing:Bool = false;
 
 	public static var p1scoretext:FlxText;
@@ -89,9 +96,11 @@ class PlayStateOnline extends MusicBeatState
 	public static var onlinemodetext:FlxText;
 
 	private var curSection:Int = 0;
+
 	public static var camFollow:FlxObject;
 	private static var prevCamFollow:FlxObject;
 	public static var currentBeat:Int;
+
 	private var strumLineNotes:FlxTypedGroup<FlxSprite>;
 	private var playerStrums:FlxTypedGroup<FlxSprite>;
 
@@ -107,7 +116,9 @@ class PlayStateOnline extends MusicBeatState
 	private var healthBarBG:FlxSprite;
 	private var progressBG:FlxSprite;
 	private var healthBar:FlxBar;
+
 	public static var leftText:FlxText;
+
 	private var generatedMusic:Bool = false;
 	private var startingSong:Bool = false;
 
@@ -117,6 +128,7 @@ class PlayStateOnline extends MusicBeatState
 
 	public static var iconP1:HealthIcon;
 	public static var iconP2:HealthIcon;
+
 	private var camHUD:FlxCamera;
 	private var camGame:FlxCamera;
 
@@ -139,8 +151,8 @@ class PlayStateOnline extends MusicBeatState
 	var bottomBoppers:FlxSprite;
 	var santa:FlxSprite;
 
-
 	public static var userleft:FlxText;
+
 	var bgGirls:BackgroundGirls;
 	var songtext:FlxText;
 	var talking:Bool = true;
@@ -148,6 +160,7 @@ class PlayStateOnline extends MusicBeatState
 	var scoreTxt:FlxText;
 	var missTxt:FlxText;
 	var noteDiff:Float;
+
 	public static var campaignScore:Int = 0;
 
 	var defaultCamZoom:Float = 1.05;
@@ -156,7 +169,9 @@ class PlayStateOnline extends MusicBeatState
 	public static var daPixelZoom:Float = 6;
 
 	var inCutscene:Bool = false;
+
 	public static var holymoly:Int = FlxG.random.int(0, 600);
+
 	#if desktop
 	// Discord RPC variables
 	var storyDifficultyText:String = "";
@@ -173,9 +188,10 @@ class PlayStateOnline extends MusicBeatState
 		FlxG.autoPause = false;
 		downscroll = FlxG.save.data.downscroll;
 
-		switch(FlxG.save.data.ks){
+		switch (FlxG.save.data.ks)
+		{
 			case null:
-				
+
 			case "WASD":
 				controls.setKeyboardScheme(KeyboardScheme.Solo);
 			case "DFJK":
@@ -273,11 +289,11 @@ class PlayStateOnline extends MusicBeatState
 
 		// String for when the game is paused
 		detailsPausedText = "Paused - " + detailsText;
-		
+
 		// Updating Discord Rich Presence.
 		DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
 		#end
-		
+
 		if (SONG.song.toLowerCase() == 'spookeez' || SONG.song.toLowerCase() == 'monster' || SONG.song.toLowerCase() == 'south')
 		{
 			curStage = "spooky";
@@ -637,8 +653,10 @@ class PlayStateOnline extends MusicBeatState
 		gf = new Character(400, 130, gfVersion);
 		gf.scrollFactor.set(0.95, 0.95);
 
-		if(!ConnectingState.modded)dad = new Character(100, 100, SONG.player2, false);
-		else dad = new Character(100, 100, 'dad', false);
+		if (!ConnectingState.modded)
+			dad = new Character(100, 100, SONG.player2, false);
+		else
+			dad = new Character(100, 100, 'dad', false);
 
 		onlinemodetext = new FlxText(0, 0, 0, "Waiting for another player... (1/2)", 60);
 		onlinemodetext.screenCenter(XY);
@@ -696,9 +714,12 @@ class PlayStateOnline extends MusicBeatState
 				dad.y += 100;
 				camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
 		}
-		if(ConnectingState.modded) camPos.x += 400;
-		if(!ConnectingState.modded)boyfriend = new Boyfriend(770, 450, SONG.player1);
-		else boyfriend = new Boyfriend(770, 450, "bf");
+		if (ConnectingState.modded)
+			camPos.x += 400;
+		if (!ConnectingState.modded)
+			boyfriend = new Boyfriend(770, 450, SONG.player1);
+		else
+			boyfriend = new Boyfriend(770, 450, "bf");
 		// REPOSITIONING PER STAGE
 		switch (curStage)
 		{
@@ -736,7 +757,7 @@ class PlayStateOnline extends MusicBeatState
 		}
 
 		add(gf);
-		
+
 		// Shitty layering but whatev it works LOL
 		if (curStage == 'limo')
 			add(limo);
@@ -744,17 +765,19 @@ class PlayStateOnline extends MusicBeatState
 		add(dad);
 		add(boyfriend);
 
-		//var doof:DialogueBox = new DialogueBox(false, dialogue);
+		// var doof:DialogueBox = new DialogueBox(false, dialogue);
 		// doof.x += 70;
 		// doof.y = FlxG.height * 0.5;
-		//doof.scrollFactor.set();
-		//doof.finishThing = startCountdown;
+		// doof.scrollFactor.set();
+		// doof.finishThing = startCountdown;
 
 		Conductor.songPosition = -5000;
-		if(downscroll) strumLine = new FlxSprite(0, FlxG.height - 180).makeGraphic(FlxG.width, 10);  // 180
-		else strumLine = new FlxSprite(0, 50).makeGraphic(FlxG.width, 10);
+		if (downscroll)
+			strumLine = new FlxSprite(0, FlxG.height - 180).makeGraphic(FlxG.width, 10); // 180
+		else
+			strumLine = new FlxSprite(0, 50).makeGraphic(FlxG.width, 10);
 		strumLine.scrollFactor.set();
-		//add(strumLine);
+		// add(strumLine);
 		strumLineNotes = new FlxTypedGroup<FlxSprite>();
 		add(strumLineNotes);
 
@@ -785,20 +808,25 @@ class PlayStateOnline extends MusicBeatState
 
 		FlxG.fixedTimestep = false;
 
-		if(downscroll)progressBG = new FlxSprite(0, FlxG.height * 0.95).loadGraphic(Paths.image('healthBar'));
-		else progressBG = new FlxSprite(0, FlxG.height - FlxG.height + 10).loadGraphic(Paths.image('healthBar'));
+		if (downscroll)
+			progressBG = new FlxSprite(0, FlxG.height * 0.95).loadGraphic(Paths.image('healthBar'));
+		else
+			progressBG = new FlxSprite(0, FlxG.height - FlxG.height + 10).loadGraphic(Paths.image('healthBar'));
 		progressBG.screenCenter(X);
 		progressBG.scrollFactor.set();
-		if(FlxG.save.data.pgbar) add(progressBG);
-
+		if (FlxG.save.data.pgbar)
+			add(progressBG);
 
 		var pgBar = new FlxBar(progressBG.x + 4, progressBG.y + 4, LEFT_TO_RIGHT, Std.int(progressBG.width - 8), Std.int(progressBG.height - 8), this,
-		'progress', 0, FlxG.sound.music.length);
+			'progress', 0, FlxG.sound.music.length);
 		pgBar.scrollFactor.set();
 		// healthBar
-		if(FlxG.save.data.pgbar) add(pgBar);
-		if(downscroll)healthBarBG = new FlxSprite(0, FlxG.height * 0.1).loadGraphic(Paths.image('healthBar'));
-		else healthBarBG = new FlxSprite(0, FlxG.height * 0.9).loadGraphic(Paths.image('healthBar'));
+		if (FlxG.save.data.pgbar)
+			add(pgBar);
+		if (downscroll)
+			healthBarBG = new FlxSprite(0, FlxG.height * 0.1).loadGraphic(Paths.image('healthBar'));
+		else
+			healthBarBG = new FlxSprite(0, FlxG.height * 0.9).loadGraphic(Paths.image('healthBar'));
 		healthBarBG.screenCenter(X);
 		healthBarBG.scrollFactor.set();
 		add(healthBarBG);
@@ -822,11 +850,13 @@ class PlayStateOnline extends MusicBeatState
 		iconP1 = new HealthIcon(SONG.player1, true);
 		iconP1.y = healthBar.y - (iconP1.height / 2);
 
-		if(!ConnectingState.modded)iconP2 = new HealthIcon(SONG.player2, false);
-		else iconP2 = new HealthIcon("dad", false);
+		if (!ConnectingState.modded)
+			iconP2 = new HealthIcon(SONG.player2, false);
+		else
+			iconP2 = new HealthIcon("dad", false);
 		iconP2.y = healthBar.y - (iconP2.height / 2);
 
-		healthBar.createFilledBar(dominantColor(iconP2), dominantColor(iconP1)); //0xFFFF0000, 0xFF66FF33
+		healthBar.createFilledBar(dominantColor(iconP2), dominantColor(iconP1)); // 0xFFFF0000, 0xFF66FF33
 		// healthBar
 		add(healthBar);
 		add(iconP1);
@@ -870,7 +900,8 @@ class PlayStateOnline extends MusicBeatState
 
 		if (isStoryMode)
 		{
-			if(PauseSubState.PauseSubState.skipped) {
+			if (PauseSubState.PauseSubState.skipped)
+			{
 				PauseSubState.skipped = false;
 				endSong();
 			}
@@ -885,15 +916,15 @@ class PlayStateOnline extends MusicBeatState
 			switch (curSong.toLowerCase())
 			{
 				default:
-					//startCountdown();
+					// startCountdown();
 			}
 		}
-			add(onlinemodetext);
-			roomcode = new FlxText(5, FlxG.height - 38, 0, "Room code: " + code, 12);
-			roomcode.scrollFactor.set();
-			roomcode.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-			roomcode.cameras = [camHUD];
-			add(roomcode);
+		add(onlinemodetext);
+		roomcode = new FlxText(5, FlxG.height - 38, 0, "Room code: " + code, 12);
+		roomcode.scrollFactor.set();
+		roomcode.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		roomcode.cameras = [camHUD];
+		add(roomcode);
 		add(leftText);
 		super.create();
 	}
@@ -934,7 +965,7 @@ class PlayStateOnline extends MusicBeatState
 			}
 			else
 			{
-					startCountdown();
+				startCountdown();
 
 				remove(black);
 			}
@@ -943,6 +974,7 @@ class PlayStateOnline extends MusicBeatState
 
 	var startTimer:FlxTimer;
 	var perfectMode:Bool = false;
+
 	function startCountdown():Void
 	{
 		inCutscene = false;
@@ -1058,9 +1090,12 @@ class PlayStateOnline extends MusicBeatState
 		previousFrameTime = FlxG.game.ticks;
 		lastReportedPlayheadPosition = 0;
 
-		if (!paused){
-			if(ConnectingState.modded)FlxG.sound.playMusic(modinst, 1, false); //Paths.inst(SONG.song)
-			else FlxG.sound.playMusic(Paths.inst(SONG.song), 1, false);
+		if (!paused)
+		{
+			if (ConnectingState.modded)
+				FlxG.sound.playMusic(modinst, 1, false); // Paths.inst(SONG.song)
+			else
+				FlxG.sound.playMusic(Paths.inst(SONG.song), 1, false);
 		}
 		FlxG.sound.music.onComplete = endSong;
 		vocals.play();
@@ -1085,10 +1120,14 @@ class PlayStateOnline extends MusicBeatState
 
 		curSong = songData.song;
 
-		if (SONG.needsVoices){
-			if(ConnectingState.modded)vocals = new FlxSound().loadEmbedded(modvoices); //Paths.voices(SONG.song)
-			else vocals = new FlxSound().loadEmbedded(Paths.voices(SONG.song));
-		}else
+		if (SONG.needsVoices)
+		{
+			if (ConnectingState.modded)
+				vocals = new FlxSound().loadEmbedded(modvoices); // Paths.voices(SONG.song)
+			else
+				vocals = new FlxSound().loadEmbedded(Paths.voices(SONG.song));
+		}
+		else
 			vocals = new FlxSound();
 
 		FlxG.sound.list.add(vocals);
@@ -1141,7 +1180,8 @@ class PlayStateOnline extends MusicBeatState
 
 					var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet, daNoteData, oldNote, true);
 					sustainNote.scrollFactor.set();
-					if(downscroll) {
+					if (downscroll)
+					{
 						sustainNote.flipY = true;
 					}
 					unspawnNotes.push(sustainNote);
@@ -1160,7 +1200,9 @@ class PlayStateOnline extends MusicBeatState
 				{
 					swagNote.x += FlxG.width / 2; // general offset
 				}
-				else {}
+				else
+				{
+				}
 			}
 			daBeats += 1;
 		}
@@ -1183,17 +1225,19 @@ class PlayStateOnline extends MusicBeatState
 		for (i in 0...4)
 		{
 			// FlxG.log.add(i);
-			var babyArrow:FlxSprite = new FlxSprite(0, 0); //y was strumLine.y
-			if (downscroll) {
+			var babyArrow:FlxSprite = new FlxSprite(0, 0); // y was strumLine.y
+			if (downscroll)
+			{
 				babyArrow.y += 550; // 10
-				//strumLine.y += 74;
-				//add(strumLine);
+				// strumLine.y += 74;
+				// add(strumLine);
 			}
-			else {
+			else
+			{
 				babyArrow.y = strumLine.y;
 				babyArrow.y -= 10;
 			}
-			//babyArrow.screenCenter(X);
+			// babyArrow.screenCenter(X);
 			switch (curStage)
 			{
 				case 'school' | 'schoolEvil':
@@ -1357,7 +1401,7 @@ class PlayStateOnline extends MusicBeatState
 
 		super.onFocus();
 	}
-	
+
 	override public function onFocusLost():Void
 	{
 		#if desktop
@@ -1369,6 +1413,7 @@ class PlayStateOnline extends MusicBeatState
 
 		super.onFocusLost();
 	}
+
 	function resyncVocals():Void
 	{
 		vocals.pause();
@@ -1385,12 +1430,14 @@ class PlayStateOnline extends MusicBeatState
 
 	override public function update(elapsed:Float)
 	{
-		if(controls.BACK && !startedMatch) {
+		if (controls.BACK && !startedMatch)
+		{
 			startedMatch = false;
 			rooms.leave();
 			FlxG.switchState(new FNFNetMenu());
 		}
-		if(assing){
+		if (assing)
+		{
 			remove(onlinemodetext);
 			remove(roomcode);
 			add(p1scoretext);
@@ -1466,7 +1513,6 @@ class PlayStateOnline extends MusicBeatState
 
 		/* if (FlxG.keys.justPressed.NINE)
 			FlxG.switchState(new Charting()); */
-
 
 		if (startingSong)
 		{
@@ -1634,12 +1680,16 @@ class PlayStateOnline extends MusicBeatState
 					daNote.visible = true;
 					daNote.active = true;
 				}
-				if(downscroll) daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (-0.45 * FlxMath.roundDecimal(SONG.speed, 2))); //thanks to the contributors of kade engine and the funkin android port for not making me destroy my pc in rage!
-				else daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SONG.speed, 2)));
+				if (downscroll)
+					daNote.y = (strumLine.y
+						- (Conductor.songPosition - daNote.strumTime) * (-0.45 * FlxMath.roundDecimal(SONG.speed,
+							2))); // thanks to the contributors of kade engine and the funkin android port for not making me destroy my pc in rage!
+				else
+					daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SONG.speed, 2)));
 
-				//daNote.y = (strumLine.y - 1000 * (0.45 / FlxMath.roundDecimal(SONG.speed, 2)));
+				// daNote.y = (strumLine.y - 1000 * (0.45 / FlxMath.roundDecimal(SONG.speed, 2)));
 
-				//daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SONG.speed, 2)));
+				// daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SONG.speed, 2)));
 
 				// i am so fucking sorry for this if condition
 				if (daNote.isSustainNote
@@ -1687,7 +1737,7 @@ class PlayStateOnline extends MusicBeatState
 
 				// WIP interpolation shit? Need to fix the pause issue
 				// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
-				
+
 				if (daNote.y < -daNote.height && !downscroll || (daNote.y >= strumLine.y + 106) && downscroll)
 				{
 					if (daNote.tooLate || !daNote.wasGoodHit)
@@ -1720,22 +1770,21 @@ class PlayStateOnline extends MusicBeatState
 	public function endSong():Void
 	{
 		startedMatch = false;
-        rooms.leave();
+		rooms.leave();
 
 		canPause = false;
 		FlxG.sound.music.volume = 0;
 		vocals.volume = 0;
 		boyfriend.stunned = true;
 
-		//persistentUpdate = false;
-		//persistentDraw = false;
+		// persistentUpdate = false;
+		// persistentDraw = false;
 		paused = true;
 
 		vocals.stop();
 		FlxG.sound.music.stop();
 
 		openSubState(new online.BattleResultSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
-
 	}
 
 	var endingSong:Bool = false;
@@ -1773,7 +1822,7 @@ class PlayStateOnline extends MusicBeatState
 			daRating = 'good';
 			score = 200;
 		}
-        rooms.send("message", {rating: daRating});
+		rooms.send("message", {rating: daRating});
 		songScore += score;
 
 		/* if (combo > 60)
@@ -2092,7 +2141,8 @@ class PlayStateOnline extends MusicBeatState
 	{
 		if (!boyfriend.stunned)
 		{
-			if(noteDiff < Conductor.safeZoneOffset * 1 && FlxG.save.data.kadeinput){
+			if (noteDiff < Conductor.safeZoneOffset * 1 && FlxG.save.data.kadeinput)
+			{
 				return;
 			}
 			health -= 0.04;
@@ -2102,7 +2152,8 @@ class PlayStateOnline extends MusicBeatState
 			}
 			combo = 0;
 
-			if(!pracMode) songScore -= 10;
+			if (!pracMode)
+				songScore -= 10;
 			missedNotes++;
 			FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
 			// FlxG.sound.play(Paths.sound('missnote1'), 1, false);

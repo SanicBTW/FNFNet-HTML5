@@ -4,11 +4,12 @@ import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
+
+using StringTools;
+
 #if polymod
 import polymod.format.ParseRules.TargetSignatureElement;
 #end
-
-using StringTools;
 
 class Note extends FlxSprite
 {
@@ -25,6 +26,7 @@ class Note extends FlxSprite
 	public var isSustainNote:Bool = false;
 
 	public var noteScore:Float = 1;
+
 	public static var single:Bool = false;
 	public static var swagWidth:Float = 160 * 0.7;
 	public static var PURP_NOTE:Int = 0;
@@ -49,7 +51,8 @@ class Note extends FlxSprite
 
 		this.noteData = noteData;
 
-		var daStage:String = switch(single){
+		var daStage:String = switch (single)
+		{
 			case false:
 				online.PlayStateOnline.curStage;
 			case true:
@@ -81,7 +84,8 @@ class Note extends FlxSprite
 					animation.add('bluehold', [1]);
 				}
 
-				setGraphicSize(Std.int(width * switch(single){
+				setGraphicSize(Std.int(width * switch (single)
+				{
 					case false:
 						online.PlayStateOnline.daPixelZoom;
 					case true:
@@ -153,12 +157,13 @@ class Note extends FlxSprite
 
 			x -= width / 2;
 
-			if (switch(single){
-				case false:
-					online.PlayStateOnline.curStage.startsWith('school');
-				case true:
-					online.PlayStateOffline.curStage.startsWith('school');
-			})
+			if (switch (single)
+				{
+					case false:
+						online.PlayStateOnline.curStage.startsWith('school');
+					case true:
+						online.PlayStateOffline.curStage.startsWith('school');
+				})
 				x += 30;
 
 			if (prevNote.isSustainNote)
@@ -175,7 +180,8 @@ class Note extends FlxSprite
 						prevNote.animation.play('redhold');
 				}
 
-				prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5 * switch(single){
+				prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5 * switch (single)
+				{
 					case false:
 						online.PlayStateOnline.SONG.speed;
 					case true:

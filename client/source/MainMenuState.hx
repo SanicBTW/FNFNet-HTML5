@@ -1,8 +1,8 @@
 package;
 
 #if desktop
-import sys.io.File;
 import Discord.DiscordClient;
+import sys.io.File;
 #end
 import flixel.FlxG;
 import flixel.FlxObject;
@@ -15,7 +15,6 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
-import io.newgrounds.NG;
 import lime.app.Application;
 
 using StringTools;
@@ -23,13 +22,16 @@ using StringTools;
 class MainMenuState extends MusicBeatState
 {
 	var curSelected:Int = 0;
+
 	public static var notPlaying:Bool;
+
 	var menuItems:FlxTypedGroup<FlxSprite>;
 
 	var optionShit:Array<String> = ['fnfnet', 'freeplay', 'options'];
 
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
+
 	override function create()
 	{
 		#if desktop
@@ -44,10 +46,12 @@ class MainMenuState extends MusicBeatState
 		{
 			var now = Date.now();
 			trace(now.getHours());
-			if(now.getHours() >= 18) {
-				FlxG.sound.playMusic(Paths.music('freakyNight')); 
+			if (now.getHours() >= 18)
+			{
+				FlxG.sound.playMusic(Paths.music('freakyNight'));
 			}
-			else {
+			else
+			{
 				FlxG.sound.playMusic(Paths.music('freakyMenu'));
 			}
 		}
@@ -94,10 +98,12 @@ class MainMenuState extends MusicBeatState
 			menuItem.animation.play('idle');
 			menuItem.ID = i;
 			menuItem.screenCenter(X);
-			if(optionShit[i] == "fnfnet") {
-				menuItem.y -= 192; 
+			if (optionShit[i] == "fnfnet")
+			{
+				menuItem.y -= 192;
 				#if updatecheck
-				if(TitleState.outdated) menuItem.alpha = 0.5;
+				if (TitleState.outdated)
+					menuItem.alpha = 0.5;
 				#end
 			}
 			menuItems.add(menuItem);
@@ -119,7 +125,7 @@ class MainMenuState extends MusicBeatState
 		menuItems.add(menuItem);
 		menuItem.scrollFactor.set();
 		menuItem.antialiasing = true;
-		//menuItem.setGraphicSize(Std.int(menuItem.width / 0.5), Std.int(menuItem.height / 0.5));
+		// menuItem.setGraphicSize(Std.int(menuItem.width / 0.5), Std.int(menuItem.height / 0.5));
 		#end
 
 		FlxG.camera.follow(camFollow, null, 0.06);
@@ -140,11 +146,14 @@ class MainMenuState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
-		if(online.ChatState.beentoChat){
+		if (online.ChatState.beentoChat)
+		{
 			online.ChatState.beentoChat = false;
 			FlxG.mouse.visible = false;
-			if(FlxG.save.data.pauseonunfocus != null) FlxG.autoPause = FlxG.save.data.pauseonunfocus;
-			else FlxG.autoPause = true;
+			if (FlxG.save.data.pauseonunfocus != null)
+				FlxG.autoPause = FlxG.save.data.pauseonunfocus;
+			else
+				FlxG.autoPause = true;
 		}
 		if (FlxG.sound.music.volume < 0.8)
 		{
@@ -168,26 +177,30 @@ class MainMenuState extends MusicBeatState
 				FlxG.switchState(new TitleState());
 			}
 			#if charselection
-			if (FlxG.keys.justPressed.LEFT){
+			if (FlxG.keys.justPressed.LEFT)
+			{
 				changeItem(0, true);
 			}
-			if (FlxG.keys.justPressed.RIGHT){
+			if (FlxG.keys.justPressed.RIGHT)
+			{
 				changeItem(1);
 			}
 			#end
-			if (FlxG.keys.justPressed.SIX) FlxG.openURL("https://www.youtube.com/watch?v=38FnpnflHEg");
-			if (FlxG.keys.justPressed.THREE) FlxG.sound.play(Paths.sound('ok'));
+			if (FlxG.keys.justPressed.SIX)
+				FlxG.openURL("https://www.youtube.com/watch?v=38FnpnflHEg");
+			if (FlxG.keys.justPressed.THREE)
+				FlxG.sound.play(Paths.sound('ok'));
 			if (controls.ACCEPT)
 			{
 				if (optionShit[curSelected] == 'donate')
-					{
-						#if linux
-						Sys.command('/usr/bin/xdg-open', ["https://ninja-muffin24.itch.io/funkin", "&"]);
-						#else
-						FlxG.openURL('https://ninja-muffin24.itch.io/funkin');
-						#end
-					}
-					else
+				{
+					#if linux
+					Sys.command('/usr/bin/xdg-open', ["https://ninja-muffin24.itch.io/funkin", "&"]);
+					#else
+					FlxG.openURL('https://ninja-muffin24.itch.io/funkin');
+					#end
+				}
+				else
 				{
 					selectedSomethin = true;
 					FlxG.sound.play(Paths.sound('confirmMenu'));
@@ -212,7 +225,8 @@ class MainMenuState extends MusicBeatState
 							{
 								var daChoice:String = optionShit[curSelected];
 								#if charselection
-								if(spr.ID == optionShit.length){
+								if (spr.ID == optionShit.length)
+								{
 									LoadingState.loadAndSwitchState(new CharacterSelection());
 								}
 								#end
@@ -229,13 +243,15 @@ class MainMenuState extends MusicBeatState
 									#if fnfnet
 									case 'fnfnet':
 										#if updatecheck
-										if(!TitleState.outdated) FlxG.switchState(new online.FNFNetMenu());
-										else FlxG.resetState();
+										if (!TitleState.outdated)
+											FlxG.switchState(new online.FNFNetMenu());
+										else
+											FlxG.resetState();
 										#else
 										FlxG.switchState(new online.FNFNetMenu());
 										#end
 									#end
-										
+
 									case 'options':
 										FlxG.switchState(new OptionsMenu());
 								}
@@ -250,7 +266,8 @@ class MainMenuState extends MusicBeatState
 
 		menuItems.forEach(function(spr:FlxSprite)
 		{
-			if(spr.ID != optionShit.length)spr.screenCenter(X);
+			if (spr.ID != optionShit.length)
+				spr.screenCenter(X);
 		});
 	}
 
@@ -259,7 +276,8 @@ class MainMenuState extends MusicBeatState
 		FlxG.sound.play(Paths.sound('scrollMenu'));
 		curSelected += huh;
 
-		if(left) curSelected = menuItems.length - 1;
+		if (left)
+			curSelected = menuItems.length - 1;
 		if (curSelected >= menuItems.length)
 			curSelected = 0;
 		if (curSelected < 0)
@@ -271,12 +289,13 @@ class MainMenuState extends MusicBeatState
 
 			if (spr.ID == curSelected)
 			{
-				
 				spr.animation.play('selected');
 				camFollow.setPosition(spr.getGraphicMidpoint().x, spr.getGraphicMidpoint().y);
-				#if fnfnet 
-				if(optionShit[curSelected] == "fnfnet") spr.y -= 15;
-				else menuItems.members[0].y = -132;
+				#if fnfnet
+				if (optionShit[curSelected] == "fnfnet")
+					spr.y -= 15;
+				else
+					menuItems.members[0].y = -132;
 				#end
 			}
 

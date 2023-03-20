@@ -1,6 +1,7 @@
 package;
 
 import Conductor.BPMChangeEvent;
+import MainMenuState.MainMenuState.notPlaying;
 import Section.SwagSection;
 import Song.SwagSong;
 import flixel.FlxG;
@@ -31,7 +32,7 @@ import openfl.events.IOErrorEvent;
 import openfl.media.Sound;
 import openfl.net.FileReference;
 import openfl.utils.ByteArray;
-import MainMenuState.MainMenuState.notPlaying;
+
 using StringTools;
 
 class ChartingState extends MusicBeatState
@@ -84,7 +85,7 @@ class ChartingState extends MusicBeatState
 	override function create()
 	{
 		curSection = 0;
-		//curSection = lastSection;
+		// curSection = lastSection;
 
 		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 8, GRID_SIZE * 16);
 		add(gridBG);
@@ -239,7 +240,7 @@ class ChartingState extends MusicBeatState
 		});
 
 		player2DropDown.selectedLabel = _song.player2;
-		
+
 		var tab_group_song = new FlxUI(null, UI_box);
 		tab_group_song.name = "Song";
 		tab_group_song.add(UI_songTitle);

@@ -1,15 +1,7 @@
 package;
 
-import polymod.Polymod.Framework;
-import lime.utils.AssetCache;
+import Controls.KeyboardScheme;
 import Controls;
-import flixel.util.FlxSave;
-#if desktop
-import sys.io.File;
-import sys.FileSystem;
-import Discord.DiscordClient;
-import sys.thread.Thread;
-#end
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -29,18 +21,27 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
+import flixel.util.FlxSave;
 import flixel.util.FlxTimer;
-import io.newgrounds.NG;
 import lime.app.Application;
+import lime.utils.AssetCache;
 import lime.utils.Assets;
-import Controls.KeyboardScheme;
+
 using StringTools;
+
+#if desktop
+import Discord.DiscordClient;
+import sys.FileSystem;
+import sys.io.File;
+import sys.thread.Thread;
+#end
 
 class TitleState extends MusicBeatState
 {
 	static var initialized:Bool = false;
 
 	public static var outdated:Bool = true;
+
 	var blackScreen:FlxSprite;
 	var credGroup:FlxGroup;
 	var credTextShit:Alphabet;
@@ -52,21 +53,9 @@ class TitleState extends MusicBeatState
 
 	override public function create():Void
 	{
-		if( FlxG.save.data.pauseonunfocus != null) FlxG.autoPause = FlxG.save.data.pauseonunfocus;
+		if (FlxG.save.data.pauseonunfocus != null)
+			FlxG.autoPause = FlxG.save.data.pauseonunfocus;
 
-		#if updatecheck
-		var http = new haxe.Http("https://raw.githubusercontent.com/General-Infinity/FNFNet/master/client/version.txt");
-
-		http.onData = function (data:String) {
-			if(data == Application.current.meta.get('version')) outdated = false; 
-		}
-
-		http.onError = function (error) {
-		trace('error: $error');
-		}
-
-		http.request();	
-		#end
 		PlayerSettings.init();
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());
@@ -74,14 +63,6 @@ class TitleState extends MusicBeatState
 		// DEBUG BULLSHIT
 
 		super.create();
-
-		NGio.noLogin(APIStuff.API);
-
-		#if ng
-		var ng:NGio = new N
-		Gio(APIStuff.API, APIStuff.EncKey);
-		trace('NEWGROUNDS LOL');
-		#end
 
 		FlxG.save.bind('fnfnet', 'ninjamuffin99');
 		Config.initsave();
@@ -114,11 +95,12 @@ class TitleState extends MusicBeatState
 
 		#if desktop
 		DiscordClient.initialize();
-		
-		Application.current.onExit.add (function (exitCode) {
+
+		Application.current.onExit.add(function(exitCode)
+		{
 			cpp.Lib.print("See you next time!\n");
 			DiscordClient.shutdown();
-		 });
+		});
 		#end
 
 		#if debug
@@ -147,20 +129,14 @@ class TitleState extends MusicBeatState
 			transIn = FlxTransitionableState.defaultTransIn;
 			transOut = FlxTransitionableState.defaultTransOut;
 
-			// HAD TO MODIFY SOME BACKEND SHIT
-			// IF THIS PR IS HERE IF ITS ACCEPTED UR GOOD TO GO
-			// https://github.com/HaxeFlixel/flixel-addons/pull/348
-
-			// var music:FlxSound = new FlxSound();
-			// music.loadStream(Paths.music('freakyMenu'));
-			// FlxG.sound.list.add(music);
-			// music.play();
 			var now = Date.now();
 			trace(now.getHours());
-			if(now.getHours() >= 18) {
-				FlxG.sound.playMusic(Paths.music('freakyNight'), 0); 
+			if (now.getHours() >= 18)
+			{
+				FlxG.sound.playMusic(Paths.music('freakyNight'), 0);
 			}
-			else {
+			else
+			{
 				FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
 			}
 			FlxG.sound.music.fadeIn(4, 0, 0.7);
@@ -170,9 +146,6 @@ class TitleState extends MusicBeatState
 		persistentUpdate = true;
 
 		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
-		// bg.antialiasing = true;
-		// bg.setGraphicSize(Std.int(bg.width * 0.6));
-		// bg.updateHitbox();
 		add(bg);
 
 		logoBl = new FlxSprite(-150, -100);
@@ -181,8 +154,6 @@ class TitleState extends MusicBeatState
 		logoBl.animation.addByPrefix('bump', 'logo bumpin', 24);
 		logoBl.animation.play('bump');
 		logoBl.updateHitbox();
-		// logoBl.screenCenter();
-		// logoBl.color = FlxColor.BLACK;
 
 		gfDance = new FlxSprite(FlxG.width * 0.4, FlxG.height * 0.07);
 		gfDance.frames = Paths.getSparrowAtlas('gfDanceTitle');
@@ -199,16 +170,7 @@ class TitleState extends MusicBeatState
 		titleText.antialiasing = true;
 		titleText.animation.play('idle');
 		titleText.updateHitbox();
-		// titleText.screenCenter(X);
 		add(titleText);
-
-		var logo:FlxSprite = new FlxSprite().loadGraphic(Paths.image('logo'));
-		logo.screenCenter();
-		logo.antialiasing = true;
-		// add(logo);
-
-		// FlxTween.tween(logoBl, {y: logoBl.y + 50}, 0.6, {ease: FlxEase.quadInOut, type: PINGPONG});
-		// FlxTween.tween(logo, {y: logoBl.y + 50}, 0.6, {ease: FlxEase.quadInOut, type: PINGPONG, startDelay: 0.1});
 
 		credGroup = new FlxGroup();
 		add(credGroup);
@@ -219,8 +181,6 @@ class TitleState extends MusicBeatState
 
 		credTextShit = new Alphabet(0, 0, "ninjamuffin99\nPhantomArcade\nkawaisprite\nevilsk8er", true);
 		credTextShit.screenCenter();
-
-		// credTextShit.alignment = CENTER;
 
 		credTextShit.visible = false;
 
@@ -240,8 +200,6 @@ class TitleState extends MusicBeatState
 			skipIntro();
 		else
 			initialized = true;
-
-		// credGroup.add(credTextShit);
 	}
 
 	function getIntroTextShit():Array<Array<String>>
@@ -265,7 +223,6 @@ class TitleState extends MusicBeatState
 	{
 		if (FlxG.sound.music != null)
 			Conductor.songPosition = FlxG.sound.music.time;
-		// FlxG.watch.addQuick('amp', FlxG.sound.music.amplitude);
 
 		if (FlxG.keys.justPressed.F)
 		{
@@ -299,44 +256,17 @@ class TitleState extends MusicBeatState
 
 		if (pressedEnter && !transitioning && skippedIntro)
 		{
-			#if !switch
-			NGio.unlockMedal(60960);
-
-			// If it's Friday according to da clock
-			if (Date.now().getDay() == 5)
-				NGio.unlockMedal(61034);
-			#end
-
 			titleText.animation.play('press');
 
 			FlxG.camera.flash(FlxColor.WHITE, 1);
 			FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
 
 			transitioning = true;
-			// FlxG.sound.music.stop();
 
 			new FlxTimer().start(1, function(tmr:FlxTimer)
 			{
-				// Check if version is outdated
-				/* will fix later
-				if (FlxG.width == 1280 || !FlxG.width == 1920) {
-					FlxG.switchState(new ScreenSubState());
-				}
-				*/
-				#if updatecheck
-				if (outdated && !OutdatedSubState.leftState)
-				{
-					FlxG.switchState(new OutdatedSubState());
-				}
-				else
-				{
-					FlxG.switchState(new MainMenuState());
-				}
-				#else
 				FlxG.switchState(new MainMenuState());
-				#end
 			});
-			// FlxG.sound.play(Paths.music('titleShoot'), 0.7);
 		}
 
 		if (pressedEnter && !skippedIntro)
@@ -395,48 +325,30 @@ class TitleState extends MusicBeatState
 		{
 			case 1:
 				createCoolText(['bit of trolling']);
-			// credTextShit.visible = true;
 			case 3:
 				addMoreText('presents');
-			// credTextShit.text += '\npresent...';
-			// credTextShit.addText();
 			case 4:
 				deleteCoolText();
-			// credTextShit.visible = false;
-			// credTextShit.text = 'In association \nwith';
-			// credTextShit.screenCenter();
 			case 5:
 				createCoolText(['In association', 'with']);
 			case 7:
 				addMoreText('the NSA');
 				ngSpr.visible = true;
-			// credTextShit.text += '\nNewgrounds';
 			case 8:
 				deleteCoolText();
 				ngSpr.visible = false;
-			// credTextShit.visible = false;
-
-			// credTextShit.text = 'Shoutouts Tom Fulp';
-			// credTextShit.screenCenter();
 			case 9:
 				createCoolText([curWacky[0]]);
-			// credTextShit.visible = true;
 			case 11:
 				addMoreText(curWacky[1]);
-			// credTextShit.text += '\nlmao';
 			case 12:
 				deleteCoolText();
-			// credTextShit.visible = false;
-			// credTextShit.text = "Friday";
-			// credTextShit.screenCenter();
 			case 13:
 				addMoreText('Friday');
-			// credTextShit.visible = true;
 			case 14:
 				addMoreText('Night');
-			// credTextShit.text += '\nNight';
 			case 15:
-				addMoreText('Funkin'); // credTextShit.text += '\nFunkin';
+				addMoreText('Funkin');
 			case 16:
 				addMoreText('Network');
 			case 17:

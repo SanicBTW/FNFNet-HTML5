@@ -1,41 +1,53 @@
 package online;
 
-import haxe.Json;
-import haxe.Http;
-import openfl.net.URLRequest;
-import openfl.media.Sound;
-import flixel.FlxSubState;
-#if desktop
-import Discord.DiscordClient;
-#end
+import Controls.*;
 import flash.text.TextField;
 import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.FlxSubState;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
-import lime.utils.Assets;
+import haxe.Http;
+import haxe.Json;
 import io.colyseus.Client;
 import io.colyseus.Room;
-import Controls.*;
+import lime.utils.Assets;
+import openfl.media.Sound;
+import openfl.net.URLRequest;
 
 using StringTools;
+
+#if desktop
+import Discord.DiscordClient;
+#end
 
 class SingleplayerMods extends MusicBeatSubstate
 {
 	var modtxt:FlxText;
-	var modlist:ModMetaa = {mods: ['shits not right'], orig: ['TrollEngine'], madeby: ['bit of trolling'], desc: ['your shit doesnt work fix ASAP!']};
+	var modlist:ModMetaa = {
+		mods: ['shits not right'],
+		orig: ['TrollEngine'],
+		madeby: ['bit of trolling'],
+		desc: ['your shit doesnt work fix ASAP!']
+	};
+
 	public static var bruh:Bool = false;
 	public static var celsong:String;
+
 	var songs:Array<SongMetadataa> = [];
+
 	public static var rooms:Room<Stuff>;
+
 	var selector:FlxText;
 	var curSelected:Int = 0;
 	var curDifficulty:Int = 1;
+
 	public static var cutscene:Bool = false;
 	public static var gimmick:Bool = false;
+
 	var modtab:Bool;
 	var loadingtxt:Alphabet;
 	var scoreText:FlxText;
@@ -57,7 +69,7 @@ class SingleplayerMods extends MusicBeatSubstate
 
 	override function create()
 	{
-        Note.single = true;
+		Note.single = true;
 		iconArray = new FlxTypedGroup<HealthIcon>();
 
 		/* 
@@ -105,7 +117,7 @@ class SingleplayerMods extends MusicBeatSubstate
 
 		scoreBG = new FlxSprite(scoreText.x - 6, 0).makeGraphic(Std.int(FlxG.width * 0.45), 105, 0xFF000000);
 		scoreBG.alpha = 0.6;
-        scoreBG.setGraphicSize(Std.int(scoreBG.width), Std.int(scoreBG.height + 700));
+		scoreBG.setGraphicSize(Std.int(scoreBG.width), Std.int(scoreBG.height + 700));
 		add(scoreBG);
 
 		diffText = new FlxText(scoreText.x, scoreText.y + 36, 0, "", 24);
@@ -142,42 +154,45 @@ class SingleplayerMods extends MusicBeatSubstate
 
 			trace(md);
 		 */
-         var mdl = new haxe.Http("http://"+Config.data.resourceaddr+"/modlist.json");
-         mdl.onData = function(data:String){
-             modlist = Json.parse(data);
-             for (i in 0...modlist.mods.length){
-                addSong(modlist.mods[i], 1, 'face');
-            }
-            curSelected = 0;
-            for (i in 0...modlist.mods.length)
-                {
-                    var songText:Alphabet = new Alphabet(0, (70 * i) + 30, songs[i].songName, true, false);
-                    songText.isMenuItem = true;
-                    songText.targetY = i;
-                    grpSongs.add(songText);
-        
-                    var icon:HealthIcon = new HealthIcon(songs[i].songCharacter);
-                    icon.sprTracker = songText;
-        
-                    // using a FlxGroup is too much fuss!
-                    iconArray.add(icon);
-        
-                    // songText.x += 40;
-                    // DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
-                    // songText.screenCenter(X);
-                }
-                add(grpSongs);
-                add(iconArray);
-                add(orgin);
-                add(creator);
-                add(desc);
-                orgin.text = "Origin: " + modlist.orig[curSelected];
-                creator.text = "Made By: " + modlist.madeby[curSelected];
-                desc.text = "Description: " + modlist.desc[curSelected];
-                changeSelection();
-                changeDiff();
-         }
-         mdl.request();
+
+		var mdl = new haxe.Http("https://ws.sancopublic.com/modlist.json");
+		mdl.onData = function(data:String)
+		{
+			modlist = Json.parse(data);
+			for (i in 0...modlist.mods.length)
+			{
+				addSong(modlist.mods[i], 1, 'face');
+			}
+			curSelected = 0;
+			for (i in 0...modlist.mods.length)
+			{
+				var songText:Alphabet = new Alphabet(0, (70 * i) + 30, songs[i].songName, true, false);
+				songText.isMenuItem = true;
+				songText.targetY = i;
+				grpSongs.add(songText);
+
+				var icon:HealthIcon = new HealthIcon(songs[i].songCharacter);
+				icon.sprTracker = songText;
+
+				// using a FlxGroup is too much fuss!
+				iconArray.add(icon);
+
+				// songText.x += 40;
+				// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
+				// songText.screenCenter(X);
+			}
+			add(grpSongs);
+			add(iconArray);
+			add(orgin);
+			add(creator);
+			add(desc);
+			orgin.text = "Origin: " + modlist.orig[curSelected];
+			creator.text = "Made By: " + modlist.madeby[curSelected];
+			desc.text = "Description: " + modlist.desc[curSelected];
+			changeSelection();
+			changeDiff();
+		}
+		mdl.request();
 		super.create();
 	}
 
@@ -240,49 +255,46 @@ class SingleplayerMods extends MusicBeatSubstate
 
 		if (accepted)
 		{
-				trace(songs[curSelected].songName.toLowerCase());
-				add(loadingtxt);
-				PlayStateOffline.modinst = new Sound(new URLRequest('http://'+Config.data.resourceaddr+'/songs/'+songs[curSelected].songName.toLowerCase()+'/Inst.ogg'));
-				PlayStateOffline.modvoices = new Sound(new URLRequest('http://'+Config.data.resourceaddr+'/songs/'+songs[curSelected].songName.toLowerCase()+'/Voices.ogg'));
-				var modif = switch(curDifficulty){
-					case 0:
-						"-easy";
-					default:
-						"";
-					case 2:
-						"-hard";
-				}
-				var http = new haxe.Http('http://'+Config.data.resourceaddr+'/songs/'+songs[curSelected].songName.toLowerCase()+'/chart$modif.json');
+			trace(songs[curSelected].songName.toLowerCase());
+			add(loadingtxt);
 
-				http.onData = function (data:String) {
-					PlayStateOffline.SONG = Song.loadFromJson(data, songs[curSelected].songName.toLowerCase(), true);
-					PlayStateOffline.isStoryMode = false;
-					PlayStateOffline.storyDifficulty = curDifficulty;
-		
-					PlayStateOffline.storyWeek = songs[curSelected].week;
-					//LoadingOnline.loadAndSwitchState(new PlayStateOnline());
-                    LoadingOnline.loadAndSwitchState(new PlayStateOffline());
-				}
+			PlayStateOffline.modinst = new Sound(new URLRequest("https://ws.sancopublic.com/songs/" + songs[curSelected].songName.toLowerCase()
+				+ '/Inst.ogg'));
+			PlayStateOffline.modvoices = new Sound(new URLRequest("https://ws.sancopublic.com/songs/"
+				+ songs[curSelected].songName.toLowerCase() + '/Voices.ogg'));
+			var modif = switch (curDifficulty)
+			{
+				case 0:
+					"-easy";
+				default:
+					"";
+				case 2:
+					"-hard";
+			}
+			var http = new haxe.Http("https://ws.sancopublic.com/songs/" + songs[curSelected].songName.toLowerCase() + '/chart$modif.json');
 
-				http.onError = function (error) {
-					FlxG.switchState(new FNFNetMenu());
-				}
+			http.onData = function(data:String)
+			{
+				PlayStateOffline.SONG = Song.loadFromJson(data, songs[curSelected].songName.toLowerCase(), true);
+				PlayStateOffline.isStoryMode = false;
+				PlayStateOffline.storyDifficulty = curDifficulty;
 
-				http.request();
+				PlayStateOffline.storyWeek = songs[curSelected].week;
+				// LoadingOnline.loadAndSwitchState(new PlayStateOnline());
+				LoadingOnline.loadAndSwitchState(new PlayStateOffline());
+			}
+
+			http.onError = function(error)
+			{
+				FlxG.switchState(new FNFNetMenu());
+			}
+
+			http.request();
 		}
-//		if(bruh){
-//			var poop:String = Highscore.formatSong(celsong, 2);
-//		
-//			PlayStateOnline.SONG = Song.loadFromJson(poop, celsong);
-//			PlayStateOnline.isStoryMode = false;
-//			PlayStateOnline.storyDifficulty = 2;
-//
-//			PlayStateOnline.storyWeek = 1;
-//			LoadingOnline.loadAndSwitchState(new PlayStateOnline());
-//			bruh = false;
-//		}
 	}
-	function init(){
+
+	function init()
+	{
 		modtab = false;
 		add(dumbText);
 		scoreBG.setGraphicSize(Std.int(scoreBG.width), 105);
@@ -311,30 +323,31 @@ class SingleplayerMods extends MusicBeatSubstate
 		grpSongs.clear();
 		iconArray.clear();
 		grpSongs = new FlxTypedGroup<Alphabet>();
-		iconArray= new FlxTypedGroup<HealthIcon>();
+		iconArray = new FlxTypedGroup<HealthIcon>();
 		for (i in 0...songs.length)
-			{
-				var songText:Alphabet = new Alphabet(0, (70 * i) + 30, songs[i].songName, true, false);
-				songText.isMenuItem = true;
-				songText.targetY = i;
-				grpSongs.add(songText);
-	
-				var icon:HealthIcon = new HealthIcon(songs[i].songCharacter);
-				icon.sprTracker = songText;
-	
-				// using a FlxGroup is too much fuss!
-				iconArray.add(icon);
-	
-				// songText.x += 40;
-				// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
-				// songText.screenCenter(X);
-			}
-			add(grpSongs);
-			add(iconArray);
-			remove(orgin);
-			remove(creator);
-			remove(desc);
+		{
+			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, songs[i].songName, true, false);
+			songText.isMenuItem = true;
+			songText.targetY = i;
+			grpSongs.add(songText);
+
+			var icon:HealthIcon = new HealthIcon(songs[i].songCharacter);
+			icon.sprTracker = songText;
+
+			// using a FlxGroup is too much fuss!
+			iconArray.add(icon);
+
+			// songText.x += 40;
+			// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
+			// songText.screenCenter(X);
+		}
+		add(grpSongs);
+		add(iconArray);
+		remove(orgin);
+		remove(creator);
+		remove(desc);
 	}
+
 	function changeDiff(change:Int = 0)
 	{
 		curDifficulty += change;
@@ -419,7 +432,8 @@ class SongMetadataa
 	}
 }
 
-typedef ModMetaa = {
+typedef ModMetaa =
+{
 	mods:Array<String>,
 	orig:Array<String>,
 	madeby:Array<String>,

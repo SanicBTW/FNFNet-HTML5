@@ -4,6 +4,7 @@ package;
 import js.html.audio.ChannelMergerNode;
 #end
 import Controls.Control;
+import Controls.KeyboardScheme;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxSubState;
@@ -15,7 +16,6 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
-import Controls.KeyboardScheme;
 
 class PauseSubState extends MusicBeatSubstate
 {
@@ -26,7 +26,13 @@ class PauseSubState extends MusicBeatSubstate
 	public static var kbd:String;
 
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
-	var menuItems:Array<String> = ['Resume', 'Restart Song', 'Control Scheme', 'Toggle Practice Mode', 'Exit to menu'];
+	var menuItems:Array<String> = [
+		'Resume',
+		'Restart Song',
+		'Control Scheme',
+		'Toggle Practice Mode',
+		'Exit to menu'
+	];
 	var curSelected:Int = 0;
 
 	var pauseMusic:FlxSound;
@@ -34,7 +40,8 @@ class PauseSubState extends MusicBeatSubstate
 	public function new(x:Float, y:Float)
 	{
 		super();
-		switch(FlxG.save.data.ks){
+		switch (FlxG.save.data.ks)
+		{
 			case null:
 				kbd = "WASD";
 			case "WASD":
@@ -81,7 +88,7 @@ class PauseSubState extends MusicBeatSubstate
 		practiceMode.setFormat(Paths.font('vcr.ttf'), 32);
 		practiceMode.updateHitbox();
 		add(practiceMode);
-		
+
 		levelDifficulty.alpha = 0;
 		levelInfo.alpha = 0;
 		practiceMode.alpha = 0;
@@ -93,16 +100,19 @@ class PauseSubState extends MusicBeatSubstate
 		cS.x = FlxG.width - (cS.width + 20);
 
 		var opa:Int;
-		if (pracMode==true){
+		if (pracMode == true)
+		{
 			opa = 1;
-		} else{
+		}
+		else
+		{
 			opa = 0;
 		}
 		FlxTween.tween(bg, {alpha: 0.6}, 0.4, {ease: FlxEase.quartInOut});
 		FlxTween.tween(levelInfo, {alpha: 1, y: 20}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.3});
 		FlxTween.tween(levelDifficulty, {alpha: 1, y: levelDifficulty.y + 5}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.5});
-		FlxTween.tween(cS, {alpha : 1, y: cS.y + 5}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.7}); //alpha : 1,
-		FlxTween.tween(practiceMode, {alpha : opa, y: practiceMode.y + 5}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.9}); //alpha : 1,	
+		FlxTween.tween(cS, {alpha: 1, y: cS.y + 5}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.7}); // alpha : 1,
+		FlxTween.tween(practiceMode, {alpha: opa, y: practiceMode.y + 5}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.9}); // alpha : 1,
 		grpMenuShit = new FlxTypedGroup<Alphabet>();
 		add(grpMenuShit);
 
@@ -152,20 +162,25 @@ class PauseSubState extends MusicBeatSubstate
 				case "Charting Menu":
 					FlxG.switchState(new ChartingState());
 				case "Control Scheme":
-					if(kbd=="WASD"){
+					if (kbd == "WASD")
+					{
 						kbd = "DFJK";
 						controls.setKeyboardScheme(Custom, true);
 						cS.text = "Control Scheme: " + kbd;
-					}else{
+					}
+					else
+					{
 						kbd = "WASD";
 						controls.setKeyboardScheme(Solo, true);
 						cS.text = "Control Scheme: " + kbd;
 					}
 				case "Toggle Practice Mode":
-					if (pracMode==true){
+					if (pracMode == true)
+					{
 						practiceMode.alpha = 0;
 						pracMode = false;
-					}else
+					}
+					else
 					{
 						practiceMode.alpha = 100;
 						pracMode = true;
@@ -174,7 +189,7 @@ class PauseSubState extends MusicBeatSubstate
 				case "Skip Song":
 					skipped = true;
 					FlxG.resetState();
-					//FlxG.resetState();
+				// FlxG.resetState();
 				case "Exit to menu":
 					FlxG.switchState(new MainMenuState());
 			}
@@ -221,8 +236,8 @@ class PauseSubState extends MusicBeatSubstate
 			}
 		}
 	}
+
 	function practice()
 	{
-
 	}
 }

@@ -1,5 +1,6 @@
 package;
 
+import OptionsMenu.OptionsMenu.cDat;
 import flixel.FlxG;
 import flixel.input.FlxInput;
 import flixel.input.actions.FlxAction;
@@ -10,7 +11,7 @@ import flixel.input.actions.FlxActionSet;
 import flixel.input.gamepad.FlxGamepadButton;
 import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
-import OptionsMenu.OptionsMenu.cDat;
+
 #if (haxe >= "4.0.0")
 enum abstract Action(String) to String from String
 {
@@ -259,7 +260,7 @@ class Controls extends FlxActionSet
 
 		for (action in digitalActions)
 			byName[action.name] = action;
-			
+
 		if (scheme == null)
 			scheme = None;
 		setKeyboardScheme(scheme, false);
@@ -317,7 +318,6 @@ class Controls extends FlxActionSet
 	{
 		var actions = new FlxActionManager();
 		FlxG.inputs.add(actions);
-		
 	}
 
 	/**
@@ -398,7 +398,7 @@ class Controls extends FlxActionSet
 			for (input in action.inputs)
 			{
 				if (device == null || isDevice(input, device))
-				byName[name].add(cast input);
+					byName[name].add(cast input);
 			}
 		}
 		#end
@@ -414,7 +414,7 @@ class Controls extends FlxActionSet
 				#else
 				for (gamepad in controls.gamepadsAdded)
 					if (gamepadsAdded.indexOf(gamepad) == -1)
-					  gamepadsAdded.push(gamepad);
+						gamepadsAdded.push(gamepad);
 				#end
 
 				mergeKeyboardScheme(controls.keyboardScheme);
@@ -491,28 +491,28 @@ class Controls extends FlxActionSet
 	public function setKeyboardScheme(scheme:KeyboardScheme, reset = true)
 	{
 		/*obsolete, may work on it later
-		var rB:FlxKey = FlxKey.RIGHT;
-		var lB:FlxKey = FlxKey.LEFT;
-		var uB:FlxKey = FlxKey.UP;
-		var dB:FlxKey = FlxKey.DOWN;
-		switch(cDat){
-			case 0:
-				rB = FlxKey.RIGHT;
-				lB = FlxKey.LEFT;
-				uB = FlxKey.UP;
-				dB = FlxKey.DOWN;
-			case 1:
-				rB = K;
-				lB = D;
-				uB = J;
-				dB = F;
-		}
-		*/
+			var rB:FlxKey = FlxKey.RIGHT;
+			var lB:FlxKey = FlxKey.LEFT;
+			var uB:FlxKey = FlxKey.UP;
+			var dB:FlxKey = FlxKey.DOWN;
+			switch(cDat){
+				case 0:
+					rB = FlxKey.RIGHT;
+					lB = FlxKey.LEFT;
+					uB = FlxKey.UP;
+					dB = FlxKey.DOWN;
+				case 1:
+					rB = K;
+					lB = D;
+					uB = J;
+					dB = F;
+			}
+		 */
 		if (reset)
 			removeKeyboard();
 
 		keyboardScheme = scheme;
-		
+
 		#if (haxe >= "4.0.0")
 		switch (scheme)
 		{
@@ -524,7 +524,7 @@ class Controls extends FlxActionSet
 				inline bindKeys(Control.ACCEPT, [Z, SPACE, ENTER]);
 				inline bindKeys(Control.BACK, [BACKSPACE, ESCAPE]);
 				inline bindKeys(Control.PAUSE, [P, ENTER, ESCAPE]);
-				inline bindKeys(Control.RESET, [R]);// nothing, or is it?
+				inline bindKeys(Control.RESET, [R]); // nothing, or is it?
 			case Duo(true):
 				inline bindKeys(Control.UP, [W]);
 				inline bindKeys(Control.DOWN, [S]);
@@ -544,7 +544,7 @@ class Controls extends FlxActionSet
 				inline bindKeys(Control.PAUSE, [ENTER]);
 				inline bindKeys(Control.RESET, [BACKSPACE]);
 			case None: // nothing
-			case Custom: 
+			case Custom:
 				inline bindKeys(Control.UP, [J, FlxKey.UP]);
 				inline bindKeys(Control.DOWN, [F, FlxKey.DOWN]);
 				inline bindKeys(Control.LEFT, [D, FlxKey.LEFT]);
@@ -607,7 +607,7 @@ class Controls extends FlxActionSet
 	public function addGamepad(id:Int, ?buttonMap:Map<Control, Array<FlxGamepadInputID>>):Void
 	{
 		gamepadsAdded.push(id);
-		
+
 		#if (haxe >= "4.0.0")
 		for (control => buttons in buttonMap)
 			inline bindButtons(control, id, buttons);
@@ -661,7 +661,7 @@ class Controls extends FlxActionSet
 		]);
 		#else
 		addGamepadLiteral(id, [
-			//Swap A and B for switch
+			// Swap A and B for switch
 			Control.ACCEPT => [B],
 			Control.BACK => [A],
 			Control.UP => [DPAD_UP, LEFT_STICK_DIGITAL_UP, RIGHT_STICK_DIGITAL_UP],
@@ -669,7 +669,7 @@ class Controls extends FlxActionSet
 			Control.LEFT => [DPAD_LEFT, LEFT_STICK_DIGITAL_LEFT, RIGHT_STICK_DIGITAL_LEFT],
 			Control.RIGHT => [DPAD_RIGHT, LEFT_STICK_DIGITAL_RIGHT, RIGHT_STICK_DIGITAL_RIGHT],
 			Control.PAUSE => [START],
-			//Swap Y and X for switch
+			// Swap Y and X for switch
 			Control.RESET => [Y],
 			Control.CHEAT => [X]
 		]);

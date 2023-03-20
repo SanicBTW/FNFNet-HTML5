@@ -27,7 +27,9 @@ class Song
 	public var bpm:Int;
 	public var needsVoices:Bool = true;
 	public var speed:Float = 1;
+
 	public static var rawJson:String;
+
 	public var player1:String = 'bf';
 	public var player2:String = 'dad';
 
@@ -40,17 +42,19 @@ class Song
 
 	public static function loadFromJson(jsonInput:String, ?folder:String, ?modded:Bool = false):SwagSong
 	{
-		if(!modded){
+		if (!modded)
+		{
 			rawJson = Assets.getText(Paths.json(folder.toLowerCase() + '/' + jsonInput.toLowerCase())).trim();
 		}
-		else {
+		else
+		{
 			rawJson = jsonInput;
 		}
 		while (!rawJson.endsWith("}"))
-			{
-				rawJson = rawJson.substr(0, rawJson.length - 1);
-				// LOL GOING THROUGH THE BULLSHIT TO CLEAN IDK WHATS STRANGE
-			}
+		{
+			rawJson = rawJson.substr(0, rawJson.length - 1);
+			// LOL GOING THROUGH THE BULLSHIT TO CLEAN IDK WHATS STRANGE
+		}
 		// FIX THE CASTING ON WINDOWS/NATIVE
 		// Windows???
 		// trace(songData);

@@ -1,47 +1,33 @@
 package;
 
-import flixel.FlxGame;
 import flixel.FlxG;
+import flixel.FlxGame;
 import flixel.FlxState;
 import openfl.Assets;
 import openfl.Lib;
 import openfl.display.FPS;
 import openfl.display.Sprite;
 import openfl.events.Event;
-#if !js
-import Config.data;
-import sys.io.File.getContent;
-#end //thank you now shut up visual studio code
-/*
-typedef ConfigData = {
-	var width:Int;
-	var height:Int;
-	var fullscreen:Bool;
-}
-*/
+
 class Main extends Sprite
 {
-	var gameWidth:Int; // Width of the game in pixels (might be less / more in actual pixels depending on your zoom).
-	var gameHeight:Int; // Height of the game in pixels (might be less / more in actual pixels depending on your zoom).
+	var gameWidth:Int = 1280; // Width of the game in pixels (might be less / more in actual pixels depending on your zoom).
+	var gameHeight:Int = 720; // Height of the game in pixels (might be less / more in actual pixels depending on your zoom).
 	var initialState:Class<FlxState> = TitleState; // The FlxState the game starts with.
 	var zoom:Float = -1; // If -1, zoom is automatically calculated to fit the window dimensions.
 	var framerate:Int = 60; // How many frames per second the game should run at.
 	var skipSplash:Bool = true; // Whether to skip the flixel splash screen that appears in release mode.
-	var startFullscreen:Bool; // Whether to start the game in fullscreen on desktop targets
-	
+	var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets
+
 	// You can pretty much ignore everything from here on - your code should go in your states.
 
 	public static function main():Void
-	{	
+	{
 		Lib.current.addChild(new Main());
 	}
 
 	public function new()
 	{
-//		var s = getContent("config.json");
-//		var config:ConfigData = haxe.Json.parse(s);
-//		var gameWidth:Int = config.width; // Width of the game in pixels (might be less / more in actual pixels depending on your zoom).
-//		var gameHeight:Int = config.height; // Height of the game in pixels (might be less / more in actual pixels depending on your zoom).
 		super();
 
 		if (stage != null)
@@ -68,18 +54,6 @@ class Main extends Sprite
 	{
 		var stageWidth:Int = Lib.current.stage.stageWidth;
 		var stageHeight:Int = Lib.current.stage.stageHeight;
-		framerate = 60;
-		#if desktop
-		//var s = getContent("config.json");
-		//var config:ConfigData = haxe.Json.parse(s);
-		gameWidth = data.width; // Width of the game in pixels (might be less / more in actual pixels depending on your zoom).
-		gameHeight = data.height; // Height of the game in pixels (might be less / more in actual pixels depending on your zoom).
-		startFullscreen = data.fullscreen;
-		#else
-		gameWidth = 1280; // Width of the game in pixels (might be less / more in actual pixels depending on your zoom).
-		gameHeight = 720; // Height of the game in pixels (might be less / more in actual pixels depending on your zoom).
-		startFullscreen = false;
-		#end
 		if (zoom == -1)
 		{
 			var ratioX:Float = stageWidth / gameWidth;
@@ -89,9 +63,6 @@ class Main extends Sprite
 			gameHeight = Math.ceil(stageHeight / zoom);
 		}
 
-		#if !debug
-		initialState = TitleState;
-		#end
 		addChild(new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));
 
 		#if !mobile

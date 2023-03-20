@@ -1,10 +1,10 @@
 package;
 
-import lime.utils.Assets;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.animation.FlxBaseAnimation;
 import flixel.graphics.frames.FlxAtlasFrames;
+import lime.utils.Assets;
 
 using StringTools;
 
@@ -14,6 +14,7 @@ typedef Offset =
 	x:Int,
 	y:Int
 }
+
 class Character extends FlxSprite
 {
 	public var animOffsets:Map<String, Array<Dynamic>>;
@@ -276,8 +277,10 @@ class Character extends FlxSprite
 			case 'bf':
 				var tex:Any;
 				#if charselection
-				if(FlxG.save.data.curcharacter == null || !isPlayer) tex = Paths.getSparrowAtlas('BOYFRIEND');
-				else tex = Paths.getSparrowAtlas(FlxG.save.data.curcharacter);
+				if (FlxG.save.data.curcharacter == null || !isPlayer)
+					tex = Paths.getSparrowAtlas('BOYFRIEND');
+				else
+					tex = Paths.getSparrowAtlas(FlxG.save.data.curcharacter);
 				#else
 				tex = Paths.getSparrowAtlas('BOYFRIEND');
 				#end
@@ -304,25 +307,25 @@ class Character extends FlxSprite
 				animation.addByPrefix('attack', 'boyfriend attack', 24, false);
 
 				/*
-				addOffset('idle', -5);
-				addOffset("singUP", -29, 27);
-				addOffset("singRIGHT", -38, -7);
-				addOffset("singLEFT", 12, -6);
-				addOffset("singDOWN", -10, -50);
-				addOffset("singUPmiss", -29, 27);
-				addOffset("singRIGHTmiss", -30, 21);
-				addOffset("singLEFTmiss", 12, 24);
-				addOffset("singDOWNmiss", -11, -19);
-				addOffset("hey", 7, 4);
-				addOffset('firstDeath', 37, 11);
-				addOffset('deathLoop', 37, 5);
-				addOffset('deathConfirm', 37, 69);
-				addOffset('scared', -4);
-				*/
+					addOffset('idle', -5);
+					addOffset("singUP", -29, 27);
+					addOffset("singRIGHT", -38, -7);
+					addOffset("singLEFT", 12, -6);
+					addOffset("singDOWN", -10, -50);
+					addOffset("singUPmiss", -29, 27);
+					addOffset("singRIGHTmiss", -30, 21);
+					addOffset("singLEFTmiss", 12, 24);
+					addOffset("singDOWNmiss", -11, -19);
+					addOffset("hey", 7, 4);
+					addOffset('firstDeath', 37, 11);
+					addOffset('deathLoop', 37, 5);
+					addOffset('deathConfirm', 37, 69);
+					addOffset('scared', -4);
+				 */
 				playAnim('idle');
 
 				flipX = true;
-/*
+			/*
 				var tex = Paths.getSparrowAtlas('Pico_FNF_assetss');
 				frames = tex;
 				animation.addByPrefix('idle', 'Pico Idle Dance', 24, false);
@@ -334,11 +337,13 @@ class Character extends FlxSprite
 				animation.addByPrefix('singDOWNmiss', 'Pico Down Note MISS', 24);
 				animation.addByPrefix('singRIGHTmiss', 'Pico Note Right Miss', 24, false);
 				animation.addByPrefix('singLEFTmiss', 'Pico NOTE LEFT miss', 24, false);
-				*/
+			 */
 			case 'bf-christmas':
 				#if charselection
-				if(FlxG.save.data.curcharacter == null || !isPlayer || FlxG.save.data.curcharacter == "BOYFRIEND") tex = Paths.getSparrowAtlas('christmas/bfChristmas');
-				else tex = Paths.getSparrowAtlas('christmas/'+FlxG.save.data.curcharacter+'Christmas');
+				if (FlxG.save.data.curcharacter == null || !isPlayer || FlxG.save.data.curcharacter == "BOYFRIEND")
+					tex = Paths.getSparrowAtlas('christmas/bfChristmas');
+				else
+					tex = Paths.getSparrowAtlas('christmas/' + FlxG.save.data.curcharacter + 'Christmas');
 				#else
 				tex = Paths.getSparrowAtlas('Christmas');
 				#end
@@ -370,10 +375,14 @@ class Character extends FlxSprite
 				flipX = true;
 			case 'bf-car':
 				#if charselection
-				if(FlxG.save.data.curcharacter == null || !isPlayer) tex = Paths.getSparrowAtlas('bfCar');
-				else {
-					if(FlxG.save.data.curcharacter == "BOYFRIEND") tex = Paths.getSparrowAtlas('bfCar');
-					else tex = Paths.getSparrowAtlas(FlxG.save.data.curcharacter+'Car');
+				if (FlxG.save.data.curcharacter == null || !isPlayer)
+					tex = Paths.getSparrowAtlas('bfCar');
+				else
+				{
+					if (FlxG.save.data.curcharacter == "BOYFRIEND")
+						tex = Paths.getSparrowAtlas('bfCar');
+					else
+						tex = Paths.getSparrowAtlas(FlxG.save.data.curcharacter + 'Car');
 				}
 				#else
 				tex = Paths.getSparrowAtlas('bfCar');
@@ -403,10 +412,14 @@ class Character extends FlxSprite
 				flipX = true;
 			case 'bf-pixel':
 				#if charselection
-				if(FlxG.save.data.curcharacter == null || !isPlayer) tex = Paths.getSparrowAtlas('weeb/bfPixel');
-				else {
-					if(FlxG.save.data.curcharacter == "BOYFRIEND") tex = Paths.getSparrowAtlas('weeb/bfPixel');
-					else tex = Paths.getSparrowAtlas('weeb/'+FlxG.save.data.curcharacter+'Pixel');
+				if (FlxG.save.data.curcharacter == null || !isPlayer)
+					tex = Paths.getSparrowAtlas('weeb/bfPixel');
+				else
+				{
+					if (FlxG.save.data.curcharacter == "BOYFRIEND")
+						tex = Paths.getSparrowAtlas('weeb/bfPixel');
+					else
+						tex = Paths.getSparrowAtlas('weeb/' + FlxG.save.data.curcharacter + 'Pixel');
 				}
 				#else
 				tex = Paths.getSparrowAtlas('weeb/bf-pixel');
@@ -445,10 +458,14 @@ class Character extends FlxSprite
 				flipX = true;
 			case 'bf-pixel-dead':
 				#if charselection
-				if(FlxG.save.data.curcharacter == null || !isPlayer) tex = Paths.getSparrowAtlas('weeb/bfPixelsDEAD');
-				else {
-					if(FlxG.save.data.curcharacter == "BOYFRIEND") tex = Paths.getSparrowAtlas('weeb/bfPixelsDEAD');
-					else tex = Paths.getSparrowAtlas('weeb/'+FlxG.save.data.curcharacter+'PixelsDEAD');
+				if (FlxG.save.data.curcharacter == null || !isPlayer)
+					tex = Paths.getSparrowAtlas('weeb/bfPixelsDEAD');
+				else
+				{
+					if (FlxG.save.data.curcharacter == "BOYFRIEND")
+						tex = Paths.getSparrowAtlas('weeb/bfPixelsDEAD');
+					else
+						tex = Paths.getSparrowAtlas('weeb/' + FlxG.save.data.curcharacter + 'PixelsDEAD');
 				}
 				#else
 				tex = Paths.getSparrowAtlas('bf');
@@ -554,7 +571,7 @@ class Character extends FlxSprite
 				addOffset("singRIGHT-alt", -1, -24);
 				addOffset("singLEFT-alt", -30, 15);
 				addOffset("singDOWN-alt", -30, -27);
-				
+
 				playAnim('idle');
 		}
 		offsetcrap();
@@ -714,10 +731,13 @@ class Character extends FlxSprite
 	{
 		animOffsets[name] = [x, y];
 	}
-	public function offsetcrap(){ //tight ass little man
+
+	public function offsetcrap()
+	{ // tight ass little man
 		var offsetList = Assets.getText(Paths.txt(curCharacter + "Offsets"));
 		var pissArray:Array<String> = offsetList.split('\n');
-		for (i in 0...pissArray.length){
+		for (i in 0...pissArray.length)
+		{
 			animOffsets[pissArray[i].split(" ")[0]] = [pissArray[i].split(" ")[1], pissArray[i].split(" ")[2]];
 		}
 	}
